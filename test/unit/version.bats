@@ -1,13 +1,9 @@
-#!/usr/bin/env bats
-
-load ../bats
-
 @test '-v should output version' {
-  run build/bin/somafm -v
+  run src/somafm -v
   [ "${status}" -eq 0 ]
 }
 
 @test '--version should output version' {
-  run build/bin/somafm --version
+  run src/somafm --version
   [ "${status}" -eq 0 ]
 }

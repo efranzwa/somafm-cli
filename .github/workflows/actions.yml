@@ -12,3 +12,7 @@ jobs:
         run: bats test/integration/
       - name: Run Unit Tests
         run: bats test/unit/
+      - name: Install ShellCheck
+        run: sudo apt-get install -y shellcheck
+      - name: Run ShellCheck
+        run: shellcheck src/somafm

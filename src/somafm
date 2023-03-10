@@ -1,8 +1,5 @@
 #!/usr/bin/env bash
 
-bindir=
-logdir=
-
 ## Command parsing ################################################################################
 cmd="${1}"; shift
 
@@ -31,13 +28,14 @@ esac
 case "${cmd}" in
   listen|play)
     test -z "${channel}" && \
-      read -e -p 'Enter channel (e.g. groovesalad, defcon, poptron): ' channel
+      read -r -e -p 'Enter channel (e.g. groovesalad, defcon, poptron): ' channel
   ;;
 esac
 
 ## Command functions ##############################################################################
 function channels() {
-  local channels=$(curl -s -H 'Accept: application/json' https://somafm.com/channels.json | \
+  local channels 
+  channels=$(curl -s -H 'Accept: application/json' https://somafm.com/channels.json | \
     jq -r '.channels | sort_by(.listeners | tonumber) | reverse | .[]' | \
     jq -r '.id + " | " + .listeners + " listeners | " + .description')
 
@@ -48,7 +46,8 @@ function channels() {
 }
 
 function help() {
-  local a=(${0//\// })
+  local a
+  read -r -a a <<< "${0//\// }"
   local bin=${a[${#a[@]}-1]}
 
   echo 'Usage:'
@@ -61,10 +60,13 @@ function help() {
   echo 'Commands:'
   echo '  channels|list|ls    List channels'
   echo '  listen|play         Listen to channel'
+  echo '  --help|-h           Display this summary'
+  echo '  --version|-v        Display script version'
 }
 
 function listen() {
-  local playlist=$(curl -s -H 'Accept: application/json' https://somafm.com/channels.json | \
+  local playlist
+  playlist=$(curl -s -H 'Accept: application/json' https://somafm.com/channels.json | \
     jq -r ".channels | map(select(.id == \"${channel}\")) | .[]" | \
     jq -r ".playlists | map(select(.quality == \"${quality}\")) | limit(1;.[]) | .url")
 
@@ -75,7 +77,7 @@ function listen() {
 }
 
 function version() {
-  echo '0.3.1'
+  echo '0.3.2'
 }
 
 ## Command routing ################################################################################

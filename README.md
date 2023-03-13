@@ -7,10 +7,11 @@ A minimalist command line interface streaming music player for the [SomaFM](http
 $ somafm listen groovesalad
 09:36:10 | UNN - For The People 
 09:37:24 | Quad - Aquaville 
-09:45:22 | Blue Six - A Woman Of The World22:27:30
+09:45:22 | Blue Six - A Woman Of The World
 ```
 
 ## Install
+Assumes Debian based Linux distribution with `apt` package manager.
 
 ```console
 $ sudo apt update
@@ -37,14 +38,14 @@ Commands:
   --version|-v        Display script version
 ```
 
-### Listen to Groove Salad:
+### Listen to Groove Salad
 
 ```console
 $ somafm listen groovesalad
 10:58:59 | Polished Chrome - In The Garden
 ```
 
-### Listen to Groove Salad at highest quality:
+### Listen to Groove Salad at highest quality
 
 ```console
 $ somafm listen groovesalad --quality=highest
@@ -55,10 +56,10 @@ $ somafm listen groovesalad --quality=highest
 
 ```console
 $ somafm --version
-0.3.2
+0.4.0
 ```
 
-### List channels:
+### List channels
 
 ```console
 $ somafm channels

@@ -4,8 +4,8 @@
   [ "${#lines[@]}" -gt 1 ]
 }
 
-@test '--help should output usage' {
-  run src/somafm --help
+@test 'helpme should output usage' {
+  run src/somafm helpme
   [ "${status}" -eq 0 ]
   [ "${#lines[@]}" -gt 1 ]
 }

@@ -3,7 +3,7 @@
   [ "${status}" -eq 0 ]
 }
 
-@test '--version should output version' {
-  run src/somafm --version
+@test 'version should output version' {
+  run src/somafm version
   [ "${status}" -eq 0 ]
 }

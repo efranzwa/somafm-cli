@@ -1,0 +1,14 @@
+name: Bats 
+on: push
+
+jobs:
+  Bats:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install bats
+        run: sudo apt-get install -y bats
+      - name: Run Integration Tests
+        run: bats test/integration/
+      - name: Run Unit Tests
+        run: bats test/unit/

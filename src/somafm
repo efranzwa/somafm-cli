@@ -1,90 +1,68 @@
 #!/usr/bin/env bash
 
-## Command parsing ################################################################################
-cmd="${1}"; shift
+play () {
+  local playlist
+  playlist=$(curl -s -H 'Accept: application/json' "${1}" | \
+    jq -r ".channels | map(select(.id == \"${2}\")) | .[]" | \
+    jq -r ".playlists | map(select(.quality == \"${3}\")) | limit(1;.[]) | .url")
 
-## Argument and option parsing ####################################################################
-while (( "$#" )); do
-  case "${1}" in
-    --channel=*) channel=${1/--channel=/''}; shift ;;
-    --quality=*) quality=${1/--quality=/''}; shift ;;
-    -c*) channel=${2}; shift; shift ;;
-    -q*) quality=${2}; shift; shift ;;
-    *)
-      case "${cmd}" in
-        listen|play) test -n "${1}" && test -z "${channel}" && channel=${1} ;;
-      esac
-      shift
-    ;;
+  case "${playlist}" in
+    '') echo "error in channel or quality"; return 1 ;;
+    *) mpv --no-config "${playlist}" 2> /dev/null | awk '/title/ { s = ""; for (i = 2; i <= NF; i++) s = s $i " "; cmd="(date +'%H:%M:%S')"; cmd | getline d; print d,"|",s; close(cmd) }' ;;
   esac
-done
+}
 
-## Default arguments and options ##################################################################
-case "${cmd}" in
-  listen|play) test -z "${quality}" && quality=high ;;
-esac
-
-## Argument and option prompting ##################################################################
-case "${cmd}" in
-  listen|play)
-    test -z "${channel}" && \
-      read -r -e -p 'Enter channel (e.g. groovesalad, defcon, poptron): ' channel
-  ;;
-esac
-
-## Command functions ##############################################################################
-function channels() {
+channels () {
   local channels 
-  channels=$(curl -s -H 'Accept: application/json' https://somafm.com/channels.json | \
+  channels=$(curl -s -H 'Accept: application/json' "${1}" | \
     jq -r '.channels | sort_by(.listeners | tonumber) | reverse | .[]' | \
-    jq -r '.id + " | " + .listeners + " listeners | " + .description')
+    jq -r -j '.id + " | "')
 
   case "${channels}" in
-    '') return 1 ;;
+    '') echo "error retrieving channel list"; return 1 ;;
     *) echo "${channels}" ;;
   esac
 }
 
-function help() {
+helpme () {
   local a
   read -r -a a <<< "${0//\// }"
   local bin=${a[${#a[@]}-1]}
 
   echo 'Usage:'
+  echo "  ${bin} play <channel> [quality <low|high|highest>]"
   echo "  ${bin} channels"
-  echo "  ${bin} listen <channel> [--quality=<low|high|highest>]"
-  echo
-  echo 'Options:'
-  echo '  quality    The listening quality (default: high)'
+  echo "  ${bin} helpme"
+  echo "  ${bin} version"
   echo
   echo 'Commands:'
-  echo '  channels|list|ls    List channels'
-  echo '  listen|play         Listen to channel'
-  echo '  --help|-h           Display this summary'
-  echo '  --version|-v        Display script version'
+  echo '  -p|play       Play channel'
+  echo '  -c|channels   List channels'
+  echo '  -h|helpme     Display this summary'
+  echo '  -v|version    Display script version'
+  echo
+  echo 'Options:'
+  echo '  -q|quality    Channel quality (default: high)'
 }
 
-function listen() {
-  local playlist
-  playlist=$(curl -s -H 'Accept: application/json' https://somafm.com/channels.json | \
-    jq -r ".channels | map(select(.id == \"${channel}\")) | .[]" | \
-    jq -r ".playlists | map(select(.quality == \"${quality}\")) | limit(1;.[]) | .url")
+version () {
+  echo "version ${1}"
+}
 
-  case "${playlist}" in
-    '') return 1 ;;
-    *) mpv --no-config "${playlist}" 2> /dev/null | awk '/title/ { s = ""; for (i = 2; i <= NF; i++) s = s $i " "; cmd="(date +'%H:%M:%S')"; cmd | getline d; print d,"|",s; close(cmd) }' ;;
+main () {
+  case "${1}" in
+    -p|play)
+      if [ -n "${2}" ]; then channel="${2}"; else helpme; return 1; fi
+      if [ "${3}" = "quality" ] || [ "${3}" = "-q" ]; then quality="${4}"; else quality="high"; fi
+      play "${url}" "${channel}" "${quality}"
+      return "$?" ;;
+    -c|channels) channels "${url}"; return "$?" ;;
+    -h|helpme) helpme; return 0 ;;
+    -v|version) version "${version}"; return 0 ;;
+    *) helpme; return 1 ;;
   esac
 }
 
-function version() {
-  echo '0.4.0'
-}
-
-## Command routing ################################################################################
-case "${cmd}" in
-  --help|-h) help; exit 0 ;;
-  --version|-v) version; exit 0 ;;
-  channels|list|ls) channels; exit "$?" ;;
-  listen|play) listen; exit "$?" ;;
-  *) help; exit 1 ;;
-esac
+version='1.0.0'
+url='https://somafm.com/channels.json'
+main "$@"

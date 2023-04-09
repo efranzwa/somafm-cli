@@ -4,18 +4,18 @@ A minimalist command line interface streaming music player for the [SomaFM](http
 <a href="https://somafm.com/"><img src="https://somafm.com/linktous/468x60sfm.gif" alt="SomaFM commercial free internet radio" border=0 width=468 height=60 ></a>
 
 ```console
-$ somafm listen groovesalad
-09:36:10 | UNN - For The People 
-09:37:24 | Quad - Aquaville 
-09:45:22 | Blue Six - A Woman Of The World
+$ somafm play groovesalad
+14:47:24 | The Funky Lowlives - Inside 
+14:48:52 | Audio Lotion - Lagrimas De Rocio 
+14:54:58 | Tycho - Overlook
 ```
 
 ## Install
-Assumes Debian based Linux distribution with `apt` package manager.
+Assumes Debian based Linux distribution with `apt` package manager, use your specific distribution package manager for installation. Dependencies are `mpv` media player and `jq` JSON filter. Version control package `git` is optional but will allow you to clone and copy the application. It is recommended to install `somafm` in a directory such as `/usr/local/bin` included in your system `$PATH`.
 
 ```console
 $ sudo apt update
-$ sudo apt install mpv jq
+$ sudo apt install git mpv jq
 $ git clone git@github.com:efranzwa/somafm-cli.git
 $ sudo cp somafm-cli/src/somafm /usr/local/bin
 ```
@@ -23,57 +23,58 @@ $ sudo cp somafm-cli/src/somafm /usr/local/bin
 ## Use
 
 ```console
-$ somafm --help
+$ somafm helpme
 Usage:
+  somafm play <channel> [quality <low|high|highest>]
   somafm channels
-  somafm listen <channel> [--quality=<low|high|highest>]
-
-Options:
-  quality    The listening quality (default: high)
+  somafm helpme
+  somafm version
 
 Commands:
-  channels|list|ls    List channels
-  listen|play         Listen to channel
-  --help|-h           Display this summary
-  --version|-v        Display script version
+  -p|play       Play channel
+  -c|channels   List channels
+  -h|helpme     Display this summary
+  -v|version    Display script version
+
+Options:
+  -q|quality    Channel quality (default: high)
 ```
 
-### Listen to Groove Salad
+### Play Groove Salad
 
 ```console
-$ somafm listen groovesalad
-10:58:59 | Polished Chrome - In The Garden
+$ somafm play groovesalad
+15:00:01 | Catching Flies - Komorebi
+
+$ somafm -p groovesalad
+15:25:20 | S1gns Of L1fe - Cell Theory
 ```
 
-### Listen to Groove Salad at highest quality
+### Play Groove Salad at highest quality
 
 ```console
-$ somafm listen groovesalad --quality=highest
-10:50:52 | Translippers - Ocean
+$ somafm play groovesalad quality highest
+14:59:39 | Tycho - Overlook
+
+$ somafm -p groovesalad -q highest
+15:30:31 | Big Muff - Poppy's Song
 ```
 
 ### Check Version
 
 ```console
-$ somafm --version
-0.4.0
+$ somafm version
+version 1.0.0
 ```
 
 ### List channels
 
 ```console
 $ somafm channels
-groovesalad | 2185 listeners | A nicely chilled plate of ambient/downtempo beats and grooves.
-dronezone | 813 listeners | Served best chilled, safe with most medications. Atmospheric textures with minimal beats.
-indiepop | 463 listeners | New and classic favorite indie pop tracks.
-spacestation | 399 listeners | Tune in, turn on, space out. Spaced-out ambient and mid-tempo electronica.
-deepspaceone | 366 listeners | Deep ambient electronic, experimental and space music. For inner and outer space exploration.
-u80s | 330 listeners | Early 80s UK Synthpop and a bit of New Wave.
-secretagent | 323 listeners | The soundtrack for your stylish, mysterious, dangerous life. For Spies and PIs too!
-gsclassic | 308 listeners | The classic (early 2000s) version of a nicely chilled plate of ambient/downtempo beats and grooves.
-lush | 274 listeners | Sensuous and mellow female vocals, many with an electronic influence.
-seventies | 245 listeners | Mellow album rock from the Seventies. Yacht not required.
-.
-.
-.
+groovesalad | dronezone | secretagent | gsclassic | spacestation | indiepop |
+deepspaceone | u80s | seventies | lush | synphaera | folkfwd | bootliquor | defcon |
+thistle | beatblender | sonicuniverse | poptron | suburbsofgoa | thetrip | reggae |
+7soul | illstreet | dubstep | cliqhop | fluid | brfm | metal | missioncontrol |
+darkzone | vaporwaves | covers | digitalis | specials | sf1033 | n5md | live | 
+scanner | sfinsf |
 ```
